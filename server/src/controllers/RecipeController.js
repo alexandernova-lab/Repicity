@@ -17,6 +17,7 @@ export const createRecipe = async (req, res) => {
       category,
       imageUrl,
       ingredients,
+      user: req.user._id,
       instructions,
     });
 
@@ -34,7 +35,9 @@ export const createRecipe = async (req, res) => {
 
 export const getRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find().sort({ createdAt: -1 });
+    const recipes = await Recipe.find({ user: req.user._id }).sort({
+      createdAt: -1,
+    });
 
     return res
       .status(200)
@@ -52,7 +55,7 @@ export const getRecipe = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const recipe = await Recipe.findById(id);
+    const recipe = await Recipe.findOne({ _id: id, user: req.user._id });
 
     if (!recipe) {
       return res.status(404).json({
@@ -93,8 +96,11 @@ export const updateRecipe = async (req, res) => {
       instructions,
     } = req.body;
 
-    const recipe = await Recipe.findByIdAndUpdate(
-      id,
+    const recipe = await Recipe.findOneAndUpdate(
+      {
+        _id: id,
+        user: req.user._id,
+      },
       {
         title,
         description,
@@ -141,8 +147,11 @@ export const deleteRecipe = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const recipe = await Recipe.findByIdAndDelete(id);
-
+    const recipe = await Recipe.findOneAndDelete({
+      _id: id,
+      user: req.user._id,
+    });
+cl
     if (!recipe) {
       return res.status(404).json({
         success: false,
