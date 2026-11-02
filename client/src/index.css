@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "repicity";
+  default: true;
+  color-scheme: light;
+
+  --color-primary: #c2410c; /* orange: main buttons, brand */
+  --color-primary-content: #ffffff;
+  --color-secondary: #047857; /* emerald: focus rings, accents */
+  --color-secondary-content: #ffffff;
+  --color-accent: #ffedd5; /* soft orange: active nav link */
+  --color-accent-content: #7c2d12;
+  --color-neutral: #2b2118; /* dark ink: active filter chip */
+  --color-neutral-content: #ffffff;
+
+  --color-base-100: #ffffff; /* cards, navbar */
+  --color-base-200: #fffbf5; /* page background */
+  --color-base-300: #eadfd0; /* borders */
+  --color-base-content: #2b2118; /* text */
+
+  --color-error: #b91c1c; /* Delete button */
+  --color-error-content: #ffffff;
+
+  --radius-box: 1.25rem; /* cards (20px) */
+  --radius-field: 0.75rem; /* buttons, inputs (12px) */
+  --radius-selector: 1rem; /* badges, checkboxes */
+}
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+}
