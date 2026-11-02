@@ -1,7 +1,33 @@
 import { ChefHat } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema } from "../schema/userSchema.js";
+import { api } from "../libs/axios.js";
+import toast from "react-hot-toast";
 
 const Register = () => {
+  // Navigate
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const submit = async (data) => {
+    try {
+      const res = await api.post("/user/register", data);
+      if (res.status === 201) {
+        navigate("/login");
+        toast.success("Register Success");
+      }
+    } catch (error) {
+      toast.error("Failed to register", error.message);
+    }
+  };
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       {/* Left Hero Section */}
@@ -43,17 +69,19 @@ const Register = () => {
           </div>
 
           {/* Static Form */}
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-5" onSubmit={handleSubmit(submit)}>
             {/* Name Input */}
             <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-base-content">
                 Name
               </label>
               <input
+                {...register("name")}
                 type="text"
                 placeholder="Maya Cooper"
                 className="w-full px-4 py-3 bg-base-100 border border-base-300 rounded-(--radius-field) text-base-content placeholder:text-base-content/40 focus:outline-none focus:border-secondary"
               />
+              {errors.name && <p>{errors.name.message}</p>}
             </div>
 
             {/* Email Input */}
@@ -62,10 +90,12 @@ const Register = () => {
                 Email
               </label>
               <input
+                {...register("email")}
                 type="email"
                 placeholder="you@example.com"
                 className="w-full px-4 py-3 bg-base-100 border border-base-300 rounded-(--radius-field) text-base-content placeholder:text-base-content/40 focus:outline-none focus:border-secondary"
               />
+              {errors.email && <p>{errors.email.message}</p>}
             </div>
 
             {/* Password Input */}
@@ -74,17 +104,17 @@ const Register = () => {
                 Password
               </label>
               <input
+                {...register("password")}
                 type="password"
                 placeholder="Create a password"
                 className="w-full px-4 py-3 bg-base-100 border border-base-300 rounded-(--radius-field) text-base-content placeholder:text-base-content/40 focus:outline-none focus:border-secondary"
               />
-              <p className="text-xs text-base-content/60">
-                At least 8 characters
-              </p>
+              {errors.password && <p>{errors.password.message}</p>}
             </div>
 
             {/* Submit Button */}
             <button
+              disabled={isSubmitting}
               type="submit"
               className="w-full bg-primary hover:opacity-95 text-primary-content font-semibold py-3 rounded-(--radius-field) transition-opacity cursor-pointer mt-2">
               Create account

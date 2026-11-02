@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import recipeRoutes from "./routes/RecipeRoutes.js";
 import userRoutes from "./routes/UserRoutes.js";
 import { protect } from "./middlewares/authMiddleware.js";
+import cors from "cors";
 
 dotenv.config({
   path: ".env",
@@ -13,6 +14,13 @@ dotenv.config({
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_LOCAL_URL,
+    credentials: true,
+  }),
+);
 
 // Routes
 app.use("/api/recipes", protect, recipeRoutes);

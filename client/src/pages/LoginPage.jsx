@@ -1,7 +1,41 @@
 import { ChefHat } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../schema/userSchema.js";
+import toast from "react-hot-toast";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext.jsx";
+import { api } from "../libs/axios.js";
 
 const LoginPage = () => {
+  // Navigate
+  const navigate = useNavigate();
+
+  // Auth Context
+  const { dispatch } = useContext(AuthContext);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const submit = async (data) => {
+    try {
+      const res = await api.post("/user/login", data);
+      console.log(res);
+      if (res.status === 200) {
+        dispatch({ type: "LOGIN", payload: res.data.data });
+        navigate("/");
+        toast.success("Login Success");
+      }
+    } catch (error) {
+      toast.error("Failed to Login", error.message);
+    }
+  };
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       {/* Left Hero Section */}
@@ -43,17 +77,19 @@ const LoginPage = () => {
           </div>
 
           {/* Static Form */}
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-5" onSubmit={handleSubmit(submit)}>
             {/* Email Input */}
             <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-base-content">
                 Email
               </label>
               <input
+                {...register("email")}
                 type="email"
                 placeholder="you@example.com"
                 className="w-full px-4 py-3 bg-base-100 border border-base-300 rounded-(--radius-field) text-base-content placeholder:text-base-content/40 focus:outline-none focus:border-secondary"
               />
+              {errors.email && <p>{errors.email.message}</p>}
             </div>
 
             {/* Password Input */}
@@ -62,14 +98,17 @@ const LoginPage = () => {
                 Password
               </label>
               <input
+                {...register("password")}
                 type="password"
                 placeholder="Your password"
                 className="w-full px-4 py-3 bg-base-100 border border-base-300 rounded-(--radius-field) text-base-content placeholder:text-base-content/40 focus:outline-none focus:border-secondary"
               />
+              {errors.password && <p>{errors.password.message}</p>}
             </div>
 
             {/* Submit Button */}
             <button
+              disabled={isSubmitting}
               type="submit"
               className="w-full bg-primary hover:opacity-95 text-primary-content font-semibold py-3 rounded-(--radius-field) transition-opacity cursor-pointer mt-2">
               Log in

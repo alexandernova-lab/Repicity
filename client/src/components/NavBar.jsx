@@ -1,6 +1,26 @@
 import { ChefHat, ChevronDown, Plus } from "lucide-react";
+import { api } from "../libs/axios.js";
+import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext.jsx";
 
 const NavBar = () => {
+  // Navigate
+  const naviate = useNavigate();
+
+  // Auth Context
+  const { dispatch } = useContext(AuthContext);
+
+  // Handle Logout
+  const handleLogout = async () => {
+    const res = await api.post("/user/logout");
+    if (res.status === 200) {
+      dispatch({ type: "LOGOUT" });
+      naviate("/login");
+      toast.success("Logout Success");
+    }
+  };
   return (
     <nav className="bg-base-100 border-b border-base-300">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
@@ -28,14 +48,34 @@ const NavBar = () => {
           </div>
 
           {/* Profile Pill */}
-          <div className="flex items-center space-x-2 border border-base-300 pl-1.5 pr-3 py-1 rounded-full cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-accent text-accent-content font-semibold text-xs flex items-center justify-center">
-              MC
+          {/* Profile Dropdown */}
+          <div className="dropdown dropdown-end">
+            {/* Your custom profile pill acting as the dropdown button */}
+            <div
+              tabIndex={0}
+              role="button"
+              className="flex items-center space-x-2 border border-base-300 pl-1.5 pr-3 py-1 rounded-full cursor-pointer hover:border-base-content/30 transition-colors">
+              <div className="w-8 h-8 rounded-full bg-accent text-accent-content font-semibold text-xs flex items-center justify-center">
+                MC
+              </div>
+              <span className="text-sm font-semibold text-base-content">
+                maya_cooks
+              </span>
+              <ChevronDown className="w-4 h-4 text-base-content" />
             </div>
-            <span className="text-sm font-semibold text-base-content">
-              maya_cooks
-            </span>
-            <ChevronDown className="w-4 h-4 text-base-content" />
+
+            {/* Dropdown Menu Content */}
+            <ul
+              tabIndex={-1}
+              className="dropdown-content menu bg-base-100 border border-base-300 rounded-(--radius-box) z-50 w-48 p-2 shadow-sm mt-2">
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="text-error font-semibold hover:bg-error/10">
+                  Log out
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
