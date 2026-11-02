@@ -3,10 +3,12 @@ import { Outlet } from "react-router";
 
 const MainLayout = () => {
   return (
-    <>
+    <div className="min-h-screen bg-base-200">
       <NavBar />
-      <Outlet />
-    </>
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        <Outlet />
+      </main>
+    </div>
   );
 };
 
