@@ -17,12 +17,27 @@ const recipeSchema = new Schema(
     },
     imageUrl: {
       type: String,
-      required: true,
+      default: "",
     },
-    ingredients: {
-      type: [String],
-      required: true,
-    },
+    ingredients: [
+      {
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        amount: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        unit: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+      },
+    ],
     instructions: {
       type: [String],
       required: true,

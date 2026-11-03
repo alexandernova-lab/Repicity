@@ -10,7 +10,7 @@ const NavBar = () => {
   const naviate = useNavigate();
 
   // Auth Context
-  const { dispatch } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
 
   // Handle Logout
   const handleLogout = async () => {
@@ -54,9 +54,15 @@ const NavBar = () => {
             <div
               tabIndex={0}
               role="button"
-              className="flex items-center space-x-2 border border-base-300 pl-1.5 pr-3 py-1 rounded-full cursor-pointer hover:border-base-content/30 transition-colors">
+              className="flex items-center space-x-2 border border-base-300 pl-1.5 pr-3 py-1 rounded-full cursor-pointer hover:border-base-content/30 transition-colors"
+            >
               <div className="w-8 h-8 rounded-full bg-accent text-accent-content font-semibold text-xs flex items-center justify-center">
-                MC
+                {user?.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()
+                  .slice(0, 2)}
               </div>
               <span className="text-sm font-semibold text-base-content">
                 maya_cooks
@@ -67,11 +73,13 @@ const NavBar = () => {
             {/* Dropdown Menu Content */}
             <ul
               tabIndex={-1}
-              className="dropdown-content menu bg-base-100 border border-base-300 rounded-(--radius-box) z-50 w-48 p-2 shadow-sm mt-2">
+              className="dropdown-content menu bg-base-100 border border-base-300 rounded-(--radius-box) z-50 w-48 p-2 shadow-sm mt-2"
+            >
               <li>
                 <button
                   onClick={handleLogout}
-                  className="text-error font-semibold hover:bg-error/10">
+                  className="text-error font-semibold hover:bg-error/10"
+                >
                   Log out
                 </button>
               </li>

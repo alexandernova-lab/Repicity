@@ -35,9 +35,11 @@ export const createRecipe = async (req, res) => {
 
 export const getRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find({ user: req.user._id }).sort({
-      createdAt: -1,
-    });
+    const recipes = await Recipe.find()
+      .sort({
+        createdAt: -1,
+      })
+      .populate("user", "name");
 
     return res
       .status(200)
@@ -55,7 +57,7 @@ export const getRecipe = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const recipe = await Recipe.findOne({ _id: id, user: req.user._id });
+    const recipe = await Recipe.findById(id).populate("user", "name");
 
     if (!recipe) {
       return res.status(404).json({
@@ -151,7 +153,7 @@ export const deleteRecipe = async (req, res) => {
       _id: id,
       user: req.user._id,
     });
-cl
+    cl;
     if (!recipe) {
       return res.status(404).json({
         success: false,

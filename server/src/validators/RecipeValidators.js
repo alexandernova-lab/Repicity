@@ -23,23 +23,30 @@ export const createRecipeValidator = [
     .isIn(["Breakfast", "Lunch", "Dinner", "Dessert"])
     .withMessage("Invalid category"),
 
-  body("imageUrl")
-    .trim()
-    .notEmpty()
-    .withMessage("Image URL is required")
-    .withMessage("Please provide a valid image URL"),
+  // body("imageUrl")
+  //   .trim()
+  //   .notEmpty()
+  //   .withMessage("Image URL is required")
+  //   .withMessage("Please provide a valid image URL"),
 
   body("ingredients")
     .isArray({ min: 1 })
-    .withMessage("At least one ingredient is required")
-    .bail()
-    .custom((ingredients) =>
-      ingredients.every(
-        (ingredient) =>
-          typeof ingredient === "string" && ingredient.trim().length > 0,
-      ),
-    )
-    .withMessage("Ingredients must be non-empty strings"),
+    .withMessage("At least one ingredient is required"),
+
+  body("ingredients.*.name")
+    .trim()
+    .notEmpty()
+    .withMessage("Ingredient name is required"),
+
+  body("ingredients.*.amount")
+    .trim()
+    .notEmpty()
+    .withMessage("Ingredient amount is required"),
+
+  body("ingredients.*.unit")
+    .trim()
+    .notEmpty()
+    .withMessage("Ingredient unit is required"),
 
   body("instructions")
     .isArray({ min: 1 })
