@@ -153,7 +153,7 @@ export const deleteRecipe = async (req, res) => {
       _id: id,
       user: req.user._id,
     });
-    cl;
+
     if (!recipe) {
       return res.status(404).json({
         success: false,

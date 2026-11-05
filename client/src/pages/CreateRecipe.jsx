@@ -40,8 +40,6 @@ const CreateRecipe = () => {
     },
   });
 
-  // Form State
-
   //   Ingredients Form state Handle
   const {
     fields: ingredientsFields,

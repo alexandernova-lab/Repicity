@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../libs/axios.js";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "react-hot-toast";
 import {
   ArrowLeft,
@@ -14,6 +14,8 @@ import { categoryGradients } from "../constants/categoryStyles.js";
 
 const RecipeDetailPage = () => {
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   const [recipeDetail, setRecipeDetail] = useState(null);
 
@@ -29,6 +31,18 @@ const RecipeDetailPage = () => {
     };
     fetchRecipe();
   }, [id]);
+
+  const handleDelete = async () => {
+    try {
+      const res = await api.delete(`/recipes/${id}`);
+      if (res.status === 200) {
+        navigate("/");
+        toast.success("Recipe Deleted");
+      }
+    } catch (error) {
+      toast.error("Recipe Delete Fail", error);
+    }
+  };
   return (
     <div className="min-h-screen bg-base-200 font-sans text-base-content py-8 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -67,11 +81,17 @@ const RecipeDetailPage = () => {
 
                 {/* Author Action Buttons (Edit / Delete) */}
                 <div className="flex items-center space-x-2">
-                  <button className="px-3 py-1.5 bg-base-100 border border-base-300 rounded-(--radius-field) text-xs font-semibold text-base-content hover:bg-base-200 transition-colors flex items-center space-x-1.5 cursor-pointer">
+                  <Link
+                    to={`/recipe-update/${recipeDetail._id}`}
+                    className="px-3 py-1.5 bg-base-100 border border-base-300 rounded-(--radius-field) text-xs font-semibold text-base-content hover:bg-base-200 transition-colors flex items-center space-x-1.5 cursor-pointer"
+                  >
                     <Pencil className="w-3.5 h-3.5 text-base-content/70" />
                     <span>Edit</span>
-                  </button>
-                  <button className="px-3 py-1.5 bg-base-100 border border-error/30 text-error rounded-(--radius-field) text-xs font-semibold hover:bg-error/10 transition-colors flex items-center space-x-1.5 cursor-pointer">
+                  </Link>
+                  <button
+                    onClick={handleDelete}
+                    className="px-3 py-1.5 bg-base-100 border border-error/30 text-error rounded-(--radius-field) text-xs font-semibold hover:bg-error/10 transition-colors flex items-center space-x-1.5 cursor-pointer"
+                  >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Delete</span>
                   </button>

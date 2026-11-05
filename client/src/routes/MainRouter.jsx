@@ -6,6 +6,7 @@ import MainLayout from "../layout/MainLayout.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
 import CreateRecipe from "../pages/CreateRecipe.jsx";
 import RecipeDetailPage from "../pages/RecipeDetailPage.jsx";
+import UpdateRecipePage from "../pages/UpdateRecipePage.jsx";
 
 const MainRouter = () => {
   const router = createBrowserRouter([
@@ -24,6 +25,10 @@ const MainRouter = () => {
         {
           path: "/recipe/:id",
           element: <RecipeDetailPage />,
+        },
+        {
+          path: "/recipe-update/:id",
+          element: <UpdateRecipePage />,
         },
       ],
     },
