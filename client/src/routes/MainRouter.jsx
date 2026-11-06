@@ -7,6 +7,7 @@ import LoginPage from "../pages/LoginPage.jsx";
 import CreateRecipe from "../pages/CreateRecipe.jsx";
 import RecipeDetailPage from "../pages/RecipeDetailPage.jsx";
 import UpdateRecipePage from "../pages/UpdateRecipePage.jsx";
+import MyRecipesPage from "../pages/MyRecipesPage.jsx";
 
 const MainRouter = () => {
   const router = createBrowserRouter([
@@ -29,6 +30,10 @@ const MainRouter = () => {
         {
           path: "/recipe-update/:id",
           element: <UpdateRecipePage />,
+        },
+        {
+          path: "/my-recipes",
+          element: <MyRecipesPage />,
         },
       ],
     },

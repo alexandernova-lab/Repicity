@@ -1,13 +1,13 @@
-import { ChefHat, ChevronDown, Plus } from "lucide-react";
+import { ChefHat, ChevronDown, Utensils } from "lucide-react";
 import { api } from "../libs/axios.js";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext.jsx";
 
 const NavBar = () => {
   // Navigate
-  const naviate = useNavigate();
+  const navigate = useNavigate();
 
   // Auth Context
   const { user, dispatch } = useContext(AuthContext);
@@ -17,9 +17,13 @@ const NavBar = () => {
     const res = await api.post("/user/logout");
     if (res.status === 200) {
       dispatch({ type: "LOGOUT" });
-      naviate("/login");
+      navigate("/login");
       toast.success("Logout Success");
     }
+  };
+
+  const handleMyRecipes = async () => {
+    navigate("/my-recipes");
   };
   return (
     <nav className="bg-base-100 border-b border-base-300">
@@ -37,14 +41,20 @@ const NavBar = () => {
         {/* Navigation & Profile */}
         <div className="flex items-center space-x-6">
           {/* Active Feed Link */}
-          <span className="bg-accent text-accent-content px-4 py-2 rounded-(--radius-field) text-sm font-semibold cursor-pointer">
+          <Link
+            to={"/"}
+            className="bg-accent text-accent-content px-4 py-2 rounded-(--radius-field) text-sm font-semibold cursor-pointer"
+          >
             Feed
-          </span>
+          </Link>
 
           {/* Create Recipe Action */}
-          <div className="flex items-center space-x-1.5 text-sm font-semibold text-base-content cursor-pointer">
-            <Plus className="w-4 h-4" />
-            <span>Create Recipe</span>
+          <div
+            onClick={handleMyRecipes}
+            className="flex items-center space-x-1.5 text-sm font-semibold text-base-content cursor-pointer"
+          >
+            <Utensils className="w-4 h-4" />
+            <span>My Recipes</span>
           </div>
 
           {/* Profile Pill */}

@@ -183,3 +183,23 @@ export const deleteRecipe = async (req, res) => {
     });
   }
 };
+
+export const getMyRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find({ user: req.user._id }).sort({
+      createdAt: -1,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Fetched My Recipes",
+      data: recipes,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch your recipes",
+      error: error.message,
+    });
+  }
+};
