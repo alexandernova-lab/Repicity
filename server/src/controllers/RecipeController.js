@@ -20,7 +20,7 @@ export const createRecipe = async (req, res) => {
       description,
       category,
       imageUrl: uploadedImage.image_url,
-      imagePublicId: uploadedImage.public_id,
+      imagePublicId: uploadedImage.public_alt,
       ingredients,
       user: req.user._id,
       instructions,
@@ -54,7 +54,7 @@ export const getRecipes = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Fetched All Recipes", data: recipes });
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to fetch recipes",
       error: error.message,
@@ -95,50 +95,70 @@ export const getRecipe = async (req, res) => {
 };
 
 export const updateRecipe = async (req, res) => {
+  let uploadedImage = null;
+
   try {
     const { id } = req.params;
 
-    const {
-      title,
-      description,
-      category,
-      imageUrl,
-      ingredients,
-      instructions,
-    } = req.body;
+    const { title, description, category, ingredients, instructions } =
+      req.body;
 
-    const recipe = await Recipe.findOneAndUpdate(
-      {
-        _id: id,
-        user: req.user._id,
-      },
-      {
-        title,
-        description,
-        category,
-        imageUrl,
-        ingredients,
-        instructions,
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
+    // 1. Find the recipe and check ownership
+    const existingRecipe = await Recipe.findOne({
+      _id: id,
+      user: req.user._id,
+    });
 
-    if (!recipe) {
+    if (!existingRecipe) {
       return res.status(404).json({
         success: false,
         message: "Recipe not found",
       });
     }
 
+    // 2. Upload new image if provided
+    if (req.file) {
+      uploadedImage = await uploadSingleImage(req.file, "repicity/recipes");
+    }
+
+    // 3. Prepare updated data
+    const updateData = {
+      title,
+      description,
+      category,
+      ingredients,
+      instructions,
+    };
+
+    if (uploadedImage) {
+      updateData.imageUrl = uploadedImage.image_url;
+      updateData.imagePublicId = uploadedImage.public_alt;
+    }
+
+    // 4. Update MongoDB
+    const updatedRecipe = await Recipe.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    // 5. Delete old image only after successful update
+    if (uploadedImage && existingRecipe.imagePublicId) {
+      await deleteImage(existingRecipe.imagePublicId);
+    }
+
     return res.status(200).json({
       success: true,
       message: "Recipe updated successfully",
-      data: recipe,
+      data: updatedRecipe,
     });
   } catch (error) {
+    // Clean up the newly uploaded image if the update fails
+    if (uploadedImage?.public_alt) {
+      await deleteImage(uploadedImage.public_alt);
+    }
+
+    console.error("Update Recipe Error:", error);
+
     if (error.name === "CastError") {
       return res.status(400).json({
         success: false,

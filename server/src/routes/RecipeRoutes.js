@@ -27,7 +27,7 @@ router.get("/", getRecipes);
 router.get("/my-recipes", getMyRecipes);
 
 router.get("/:id", getRecipe);
-router.put("/:id", updateRecipe);
+router.put("/:id", upload.single("image"), parseRecipeForm, updateRecipe);
 router.delete("/:id", deleteRecipe);
 
 export default router;
