@@ -19,6 +19,10 @@ const recipeSchema = new Schema(
       type: String,
       default: "",
     },
+    imagePublicId: {
+      type: String,
+      default: "",
+    },
     ingredients: [
       {
         name: {

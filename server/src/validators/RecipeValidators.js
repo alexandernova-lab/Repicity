@@ -23,12 +23,6 @@ export const createRecipeValidator = [
     .isIn(["Breakfast", "Lunch", "Dinner", "Dessert"])
     .withMessage("Invalid category"),
 
-  // body("imageUrl")
-  //   .trim()
-  //   .notEmpty()
-  //   .withMessage("Image URL is required")
-  //   .withMessage("Please provide a valid image URL"),
-
   body("ingredients")
     .isArray({ min: 1 })
     .withMessage("At least one ingredient is required"),

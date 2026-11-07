@@ -9,10 +9,19 @@ import {
 } from "../controllers/RecipeController.js";
 import { createRecipeValidator } from "../validators/RecipeValidators.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
+import { upload } from "../middlewares/upload.js";
+import { parseRecipeForm } from "../middlewares/parseRecipeForm.js";
 
 const router = express.Router();
 
-router.post("/", createRecipeValidator, validateRequest, createRecipe);
+router.post(
+  "/",
+  upload.single("image"),
+  parseRecipeForm,
+  createRecipeValidator,
+  validateRequest,
+  createRecipe,
+);
 router.get("/", getRecipes);
 
 router.get("/my-recipes", getMyRecipes);

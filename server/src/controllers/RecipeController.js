@@ -1,30 +1,39 @@
 import { Recipe } from "../models/recipe.js";
+import { uploadSingleImage, deleteImage } from "../utils/cloudinary.js";
 
 export const createRecipe = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      category,
-      imageUrl,
-      ingredients,
-      instructions,
-    } = req.body;
+    const { title, description, category, ingredients, instructions } =
+      req.body;
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Recipe image is required",
+      });
+    }
+
+    const uploadedImage = await uploadSingleImage(req.file, "repicity/recipes");
 
     const recipe = await Recipe.create({
       title,
       description,
       category,
-      imageUrl,
+      imageUrl: uploadedImage.image_url,
+      imagePublicId: uploadedImage.public_id,
       ingredients,
       user: req.user._id,
       instructions,
     });
 
-    return res
-      .status(201)
-      .json({ success: true, message: "Recipe Created", data: recipe });
+    return res.status(201).json({
+      success: true,
+      message: "Recipe Created",
+      data: recipe,
+    });
   } catch (error) {
+    console.error("Create Recipe Error:", error);
+
     return res.status(500).json({
       success: false,
       message: "Failed to create Recipe",
@@ -159,6 +168,10 @@ export const deleteRecipe = async (req, res) => {
         success: false,
         message: "Recipe not found",
       });
+    }
+
+    if (recipe.imagePublicId) {
+      await deleteImage(recipe.imagePublicId);
     }
 
     return res.status(200).json({
