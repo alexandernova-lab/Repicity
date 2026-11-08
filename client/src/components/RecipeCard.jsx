@@ -13,7 +13,15 @@ const RecipeCard = ({ recipe }) => {
         <div
           className={`h-48 w-full ${categoryGradients[recipe.category?.toLowerCase()] || "bg-base-200"} flex items-center justify-center relative`}
         >
-          <ImageIcon className="w-10 h-10 opacity-40 stroke-1" />
+          {recipe.imageUrl ? (
+            <img
+              src={recipe.imageUrl}
+              alt={recipe.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <ImageIcon className="w-10 h-10 opacity-40 stroke-1" />
+          )}
         </div>
 
         {/* Card Content */}

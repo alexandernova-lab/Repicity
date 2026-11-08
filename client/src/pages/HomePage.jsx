@@ -12,6 +12,7 @@ const RecipeFeed = () => {
     const fetchRecipes = async () => {
       const res = await api.get("/recipes/");
       setRecipes(res.data.data);
+      console.log(res.data.data);
     };
     fetchRecipes();
   }, []);

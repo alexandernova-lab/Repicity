@@ -11,10 +11,14 @@ import { useEffect, useState } from "react";
 import { api } from "../libs/axios.js";
 import { el } from "zod/v4/locales";
 import toast from "react-hot-toast";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const MyRecipes = () => {
   const [myRecipes, setMyRecipes] = useState([]);
+
+  // Navigate
+  const navigate = useNavigate();
+
   // fetch my recipes
   useEffect(() => {
     const fetchMyRecipes = async () => {
@@ -28,7 +32,7 @@ const MyRecipes = () => {
     fetchMyRecipes();
   }, []);
 
-  const handleDelete = async () => {
+  const handleDelete = async (id) => {
     try {
       const res = await api.delete(`/recipes/${id}`);
       if (res.status === 200) {
@@ -36,7 +40,11 @@ const MyRecipes = () => {
         toast.success("Recipe Deleted");
       }
     } catch (error) {
-      toast.error("Recipe Delete Fail", error);
+      console.log("Delete Error:", error);
+      console.log("Response:", error.response?.data);
+      console.log("Status:", error.response?.status);
+
+      toast.error(error.response?.data?.message || "Recipe Delete Failed");
     }
   };
   return (
@@ -99,7 +107,15 @@ const MyRecipes = () => {
                 <div
                   className={`h-48 w-full ${categoryGradients.breakfast} flex items-center justify-center`}
                 >
-                  <ImageIcon className="w-10 h-10 stroke-1" />
+                  {recipe.imageUrl ? (
+                    <img
+                      src={recipe.imageUrl}
+                      alt={recipe.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="w-10 h-10 stroke-1" />
+                  )}
                 </div>
                 <div className="p-5 space-y-3">
                   <span className="inline-block px-2.5 py-0.5 bg-amber-100 text-amber-900 rounded-full text-[11px] font-semibold">
@@ -140,7 +156,7 @@ const MyRecipes = () => {
                     <span>Edit</span>
                   </Link>
                   <button
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(recipe._id)}
                     className="py-2 px-3 bg-base-100 hover:bg-error/10 border border-base-300 text-base-content hover:text-error rounded-(--radius-field) text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

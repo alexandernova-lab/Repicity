@@ -49,7 +49,15 @@ const RecipeDetailPage = () => {
             <div
               className={`h-64 sm:h-80 md:h-96 w-full bg-linear-to-br ${categoryGradients[recipeDetail.category?.toLowerCase()] || "bg-base-200"}  rounded-(--radius-box) border border-base-300 flex items-center justify-center relative overflow-hidden shadow-sm`}
             >
-              <ImageIcon className="w-16 h-16 text-orange-800/30 stroke-1" />
+              {recipeDetail.imageUrl ? (
+                <img
+                  src={recipeDetail.imageUrl}
+                  alt={recipeDetail.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <ImageIcon className="w-16 h-16 text-orange-800/30 stroke-1" />
+              )}
             </div>
 
             {/* Recipe Title & Meta Header */}

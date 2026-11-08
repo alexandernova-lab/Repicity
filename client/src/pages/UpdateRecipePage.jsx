@@ -4,7 +4,6 @@ import {
   Plus,
   Trash2,
   GripVertical,
-  Image as ImageIcon,
   RotateCcw,
   Save,
   X,
@@ -14,24 +13,32 @@ import { Link, useNavigate, useParams } from "react-router";
 import { api } from "../libs/axios.js";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createRecipeSchema } from "../schema/recipeSchema.js";
+import { updateRecipeSchema } from "../schema/recipeSchema.js";
 import { toast } from "react-hot-toast";
 
 const EditRecipe = () => {
   const { id } = useParams();
+  const [recipeDetail, setRecipeDetail] = useState(null);
+
+  // Selected Image
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  // Preview Image
+  const [imagePreview, setImagePreview] = useState(null);
 
   // Navigation
   const navigate = useNavigate();
 
-  //   React Hook Form
+  //  React Hook Form
   const {
     register,
     control,
     reset,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(createRecipeSchema),
+    resolver: zodResolver(updateRecipeSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -61,26 +68,47 @@ const EditRecipe = () => {
     name: "instructions",
   });
 
-  const [recipeDetail, setRecipeDetail] = useState(null);
-
   useEffect(() => {
     const fetchRecipe = async () => {
-      const res = await api.get(`/recipes/${id}`);
-      console.log(res.data.data);
+      try {
+        const res = await api.get(`/recipes/${id}`);
 
-      if (res.status === 200) {
-        setRecipeDetail(res.data.data);
-        reset(res.data.data);
+        if (res.status === 200) {
+          const recipe = res.data.data;
+
+          setRecipeDetail(recipe);
+
+          reset({
+            title: recipe.title,
+            description: recipe.description,
+            category: recipe.category,
+            ingredients: recipe.ingredients,
+            instructions: recipe.instructions,
+          });
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to load recipe");
       }
     };
+
     fetchRecipe();
   }, [id, reset]);
 
   const submit = async (data) => {
-    console.log(data);
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+
+    if (data.image) {
+      formData.append("image", data.image);
+    }
+
+    formData.append("ingredients", JSON.stringify(data.ingredients));
+    formData.append("instructions", JSON.stringify(data.instructions));
 
     try {
-      const res = await api.put(`/recipes/${id}`, data);
+      const res = await api.put(`/recipes/${id}`, formData);
       if (res.status === 200) {
         toast.success("Updated Success");
         navigate("/");
@@ -202,24 +230,37 @@ const EditRecipe = () => {
                   </p>
 
                   {/* Photo Preview Container */}
-                  <div className="h-60 w-full bg-gradient-to-br from-orange-100 via-amber-100 to-orange-200 border border-base-300 rounded-(--radius-field) flex flex-col items-center justify-center relative overflow-hidden shadow-inner mb-4">
-                    <ImageIcon className="w-12 h-12 text-orange-800/30 stroke-1 mb-2" />
-                    <span className="text-xs text-base-content/60 font-medium">
-                      lemon-ricotta-pancakes.jpg
-                    </span>
+                  <div className="h-60 w-full bg-linear-to-br from-orange-100 via-amber-100 to-orange-200 border border-base-300 rounded-(--radius-field) flex flex-col items-center justify-center relative overflow-hidden shadow-inner mb-4">
+                    <img
+                      src={imagePreview || recipeDetail.imageUrl}
+                      alt={recipeDetail.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
 
                 {/* Photo Action Buttons */}
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      className="py-2.5 px-3 bg-base-200 hover:bg-base-300 border border-base-300 text-base-content font-semibold text-xs rounded-(--radius-field) flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
-                    >
+                    <label className="py-2.5 px-3 bg-base-200 hover:bg-base-300 border border-base-300 text-base-content font-semibold text-xs rounded-(--radius-field) flex items-center justify-center space-x-1.5 transition-colors cursor-pointer">
                       <Upload className="w-3.5 h-3.5" />
                       <span>Replace photo</span>
-                    </button>
+
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+
+                          if (file) {
+                            setSelectedImage(file);
+                            setImagePreview(URL.createObjectURL(file));
+                            setValue("image", file, { shouldValidate: true });
+                          }
+                        }}
+                      />
+                    </label>
                     <button
                       type="button"
                       className="py-2.5 px-3 bg-base-100 hover:bg-error/10 border border-base-300 text-base-content hover:text-error font-semibold text-xs rounded-(--radius-field) flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"

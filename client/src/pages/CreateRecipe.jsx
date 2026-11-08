@@ -12,8 +12,10 @@ import { createRecipeSchema } from "../schema/recipeSchema.js";
 import { Link, useNavigate } from "react-router";
 import { api } from "../libs/axios.js";
 import { toast } from "react-hot-toast";
+import { useEffect, useState } from "react";
 
 const CreateRecipe = () => {
+  const [imagePreview, setImagePreview] = useState(null);
   // Navigate
   const navigate = useNavigate();
 
@@ -22,6 +24,7 @@ const CreateRecipe = () => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(createRecipeSchema),
@@ -29,6 +32,7 @@ const CreateRecipe = () => {
       title: "",
       description: "",
       category: "",
+      image: null,
       ingredients: [
         {
           name: "",
@@ -60,10 +64,36 @@ const CreateRecipe = () => {
     name: "instructions",
   });
 
+  const selectedImage = watch("image")?.[0];
+
+  useEffect(() => {
+    if (!selectedImage) {
+      setImagePreview(null);
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(selectedImage);
+
+    setImagePreview(imageUrl);
+
+    return () => {
+      URL.revokeObjectURL(imageUrl);
+    };
+  }, [selectedImage]);
+
   //   Submit Handler
   const onSubmit = async (data) => {
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("image", data.image);
+
+    formData.append("ingredients", JSON.stringify(data.ingredients));
+    formData.append("instructions", JSON.stringify(data.instructions));
+
     try {
-      const res = await api.post("/recipes/", data);
+      const res = await api.post("/recipes/", formData);
       if (res.status === 201) {
         navigate("/");
         toast.success("Recipe Created");
@@ -174,20 +204,41 @@ const CreateRecipe = () => {
                 Recommended ratio 4:3
               </p>
 
-              <div className="border-2 border-dashed border-base-300 rounded-(--radius-field) p-6 text-center bg-base-200/50 hover:bg-base-200 transition-colors cursor-pointer flex flex-col items-center justify-center min-h-50">
-                <div className="w-12 h-12 rounded-full bg-accent text-accent-content flex items-center justify-center mb-3">
-                  <Upload className="w-5 h-5 stroke-[2.5]" />
-                </div>
-                <p className="text-sm font-semibold text-base-content">
-                  Upload your recipe photo
+              <label htmlFor="" className="relative block">
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  {...register("image")}
+                />
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Recipe preview"
+                    className="w-full h-48 object-cover rounded-(--radius-field)"
+                  />
+                ) : (
+                  <div className="border-2 border-dashed border-base-300 rounded-(--radius-field) p-6 text-center bg-base-200/50 hover:bg-base-200 transition-colors cursor-pointer flex flex-col items-center justify-center min-h-50">
+                    <div className="w-12 h-12 rounded-full bg-accent text-accent-content flex items-center justify-center mb-3">
+                      <Upload className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <p className="text-sm font-semibold text-base-content">
+                      Upload your recipe photo
+                    </p>
+                    <p className="text-xs text-base-content/60 mt-1">
+                      Drag and drop, or click to browse
+                    </p>
+                    <span className="inline-block mt-3 px-3 py-1 bg-base-100 border border-base-300 rounded-full text-[10px] font-bold text-base-content/70 uppercase tracking-wider">
+                      PNG, JPG or WEBP
+                    </span>
+                  </div>
+                )}
+              </label>
+              {errors.image && (
+                <p className="text-error text-xs mt-2">
+                  {errors.image.message}
                 </p>
-                <p className="text-xs text-base-content/60 mt-1">
-                  Drag and drop, or click to browse
-                </p>
-                <span className="inline-block mt-3 px-3 py-1 bg-base-100 border border-base-300 rounded-full text-[10px] font-bold text-base-content/70 uppercase tracking-wider">
-                  PNG, JPG or WEBP
-                </span>
-              </div>
+              )}
             </div>
             <p className="text-xs text-base-content/50 mt-4 flex items-center space-x-1">
               <ImageIcon className="w-3.5 h-3.5" />

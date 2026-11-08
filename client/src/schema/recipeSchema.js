@@ -17,6 +17,20 @@ export const createRecipeSchema = z.object({
     error: "Please select a valid category",
   }),
 
+  image: z.preprocess(
+    (files) => files?.[0],
+    z
+      .instanceof(File, { error: "Recipe image is required" })
+      .refine(
+        (file) => file.size <= 5 * 1024 * 1024,
+        "Image must be 5MB or smaller",
+      )
+      .refine(
+        (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+        "Only JPG, PNG, and WebP images are allowed",
+      ),
+  ),
+
   ingredients: z
     .array(
       z.object({
@@ -30,4 +44,21 @@ export const createRecipeSchema = z.object({
   instructions: z
     .array(z.string().trim().min(1, "Instruction cannot be empty"))
     .min(1, "At least one instruction is required"),
+});
+
+export const updateRecipeSchema = createRecipeSchema.extend({
+  image: z.preprocess(
+    (files) => (files instanceof File ? files : files?.[0]),
+    z
+      .instanceof(File)
+      .refine(
+        (file) => file.size <= 5 * 1024 * 1024,
+        "Image must be 5MB or smaller",
+      )
+      .refine(
+        (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+        "Only JPG, PNG, and WebP images are allowed",
+      )
+      .optional(),
+  ),
 });

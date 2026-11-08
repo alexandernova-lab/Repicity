@@ -137,7 +137,7 @@ export const updateRecipe = async (req, res) => {
 
     // 4. Update MongoDB
     const updatedRecipe = await Recipe.findByIdAndUpdate(id, updateData, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     });
 
