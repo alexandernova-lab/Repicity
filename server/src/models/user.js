@@ -6,6 +6,20 @@ const userSchema = new Schema({
     required: true,
     trim: true,
   },
+  username: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true,
+  },
+  avatar: {
+    type: String,
+    default: "",
+  },
+  avatarPublicId: {
+    type: String,
+    default: "",
+  },
   email: {
     type: String,
     required: true,
