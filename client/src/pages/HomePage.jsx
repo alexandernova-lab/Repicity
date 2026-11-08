@@ -3,16 +3,26 @@ import RecipeCard from "../components/RecipeCard.jsx";
 import { useEffect, useState } from "react";
 import { api } from "../libs/axios.js";
 import { Link } from "react-router";
+import RecipeCardSkeleton from "../components/skeletons/RecipeCardSkeleton.jsx";
 
 const RecipeFeed = () => {
   const [recipes, setRecipes] = useState([]);
 
+  // Loading State
+  const [loading, setLoading] = useState(true);
+
   // Get All Recipes
   useEffect(() => {
     const fetchRecipes = async () => {
-      const res = await api.get("/recipes/");
-      setRecipes(res.data.data);
-      console.log(res.data.data);
+      try {
+        setLoading(true);
+        const res = await api.get("/recipes/");
+        setRecipes(res.data.data);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to fetch recipes");
+      } finally {
+        setLoading(false);
+      }
     };
     fetchRecipes();
   }, []);
@@ -60,9 +70,13 @@ const RecipeFeed = () => {
 
       {/* Recipe Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer">
-        {recipes.map((recipe) => (
-          <RecipeCard key={recipe._id} recipe={recipe} />
-        ))}
+        {loading
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <RecipeCardSkeleton key={index} />
+            ))
+          : recipes.map((recipe) => (
+              <RecipeCard key={recipe._id} recipe={recipe} />
+            ))}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
@@ -8,8 +8,11 @@ import CreateRecipe from "../pages/CreateRecipe.jsx";
 import RecipeDetailPage from "../pages/RecipeDetailPage.jsx";
 import UpdateRecipePage from "../pages/UpdateRecipePage.jsx";
 import MyRecipesPage from "../pages/MyRecipesPage.jsx";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext.jsx";
 
 const MainRouter = () => {
+  const { user } = useContext(AuthContext);
   const router = createBrowserRouter([
     {
       path: "/",
@@ -17,33 +20,33 @@ const MainRouter = () => {
       children: [
         {
           path: "/",
-          element: <HomePage />,
+          element: user ? <HomePage /> : <Navigate to={"/register"} />,
         },
         {
           path: "/create",
-          element: <CreateRecipe />,
+          element: user ? <CreateRecipe /> : <Navigate to={"/register"} />,
         },
         {
           path: "/recipe/:id",
-          element: <RecipeDetailPage />,
+          element: user ? <RecipeDetailPage /> : <Navigate to={"/register"} />,
         },
         {
           path: "/recipe-update/:id",
-          element: <UpdateRecipePage />,
+          element: user ? <UpdateRecipePage /> : <Navigate to={"/register"} />,
         },
         {
           path: "/my-recipes",
-          element: <MyRecipesPage />,
+          element: user ? <MyRecipesPage /> : <Navigate to={"/register"} />,
         },
       ],
     },
     {
       path: "/register",
-      element: <RegisterPage />,
+      element: !user ? <RegisterPage /> : <Navigate to={"/"} />,
     },
     {
       path: "/login",
-      element: <LoginPage />,
+      element: !user ? <LoginPage /> : <Navigate to={"/"} />,
     },
   ]);
   return <RouterProvider router={router} />;
