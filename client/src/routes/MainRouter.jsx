@@ -10,6 +10,7 @@ import UpdateRecipePage from "../pages/UpdateRecipePage.jsx";
 import MyRecipesPage from "../pages/MyRecipesPage.jsx";
 import { useContext } from "react";
 import AuthContext from "../context/AuthContext.jsx";
+import MyProfilePage from "../pages/MyProfilePage.jsx";
 
 const MainRouter = () => {
   const { user } = useContext(AuthContext);
@@ -37,6 +38,10 @@ const MainRouter = () => {
         {
           path: "/my-recipes",
           element: user ? <MyRecipesPage /> : <Navigate to={"/register"} />,
+        },
+        {
+          path: "/profile",
+          element: user ? <MyProfilePage /> : <Navigate to={"/register"} />,
         },
       ],
     },

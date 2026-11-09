@@ -11,6 +11,7 @@ const NavBar = () => {
 
   // Auth Context
   const { user, dispatch } = useContext(AuthContext);
+  console.log(user);
 
   // Handle Logout
   const handleLogout = async () => {
@@ -75,7 +76,7 @@ const NavBar = () => {
                   .slice(0, 2)}
               </div>
               <span className="text-sm font-semibold text-base-content">
-                maya_cooks
+                {user?.username || user?.name}
               </span>
               <ChevronDown className="w-4 h-4 text-base-content" />
             </div>
@@ -92,6 +93,12 @@ const NavBar = () => {
                 >
                   Log out
                 </button>
+                <Link
+                  to={"/profile"}
+                  className="text-base-content font-semibold hover:bg-error/10"
+                >
+                  My Profile
+                </Link>
               </li>
             </ul>
           </div>

@@ -371,7 +371,7 @@ const EditRecipe = () => {
               <div className="space-y-4">
                 {instructionFields.map((instruction, index) => (
                   <div
-                    key={instruction._id}
+                    key={index}
                     className="flex items-start space-x-3 bg-base-200/60 p-3 sm:p-4 rounded-(--radius-field) border border-base-300/60"
                   >
                     <GripVertical className="w-4 h-4 text-base-content/30 cursor-grab shrink-0 mt-3 hidden sm:block" />

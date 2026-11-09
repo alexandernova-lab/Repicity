@@ -12,6 +12,10 @@ const AuthReducer = (state, action) => {
       localStorage.removeItem("user");
       return { ...state, user: null };
 
+    case "UPDATE_USER":
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      return { ...state, user: action.payload };
+
     default:
       return state;
   }
