@@ -17,7 +17,6 @@ const RecipeDetailPage = () => {
 
       if (res.status === 200) {
         setRecipeDetail(res.data.data);
-        toast.success("Recipe Detail");
       }
     };
     fetchRecipe();

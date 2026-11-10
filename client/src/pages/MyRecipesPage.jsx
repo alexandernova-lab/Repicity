@@ -12,6 +12,7 @@ import { api } from "../libs/axios.js";
 import { el } from "zod/v4/locales";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
+import EmptyRecipeCard from "../components/EmptyRecipeCard.jsx";
 
 const MyRecipes = () => {
   const [myRecipes, setMyRecipes] = useState([]);
@@ -94,7 +95,7 @@ const MyRecipes = () => {
             Dessert
           </button>
         </div>
-
+        {myRecipes.length === 0 && <EmptyRecipeCard />}
         {/* 3-Column Recipe Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Card 1: Breakfast */}

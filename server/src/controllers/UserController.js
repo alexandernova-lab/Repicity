@@ -5,7 +5,7 @@ import { deleteImage, uploadSingleImage } from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, username, password } = req.body;
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -23,6 +23,7 @@ export const register = async (req, res) => {
     const user = await User.create({
       name,
       email,
+      username,
       password: hashedPassword,
     });
 

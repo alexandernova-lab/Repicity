@@ -60,7 +60,7 @@ const RecipeCard = ({ recipe }) => {
             {/* Comment Counter */}
             <div className="flex items-center space-x-1 text-base-content/60 text-xs">
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>{recipe.comments}</span>
+              <span>{recipe.commentsCount}</span>
             </div>
           </div>
         </div>

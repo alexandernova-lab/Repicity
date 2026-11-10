@@ -1,4 +1,5 @@
 import { Recipe } from "../models/recipe.js";
+import { Comment } from "../models/comment.js";
 import { uploadSingleImage, deleteImage } from "../utils/cloudinary.js";
 
 export const createRecipe = async (req, res) => {
@@ -50,9 +51,32 @@ export const getRecipes = async (req, res) => {
       })
       .populate("user", "name");
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Fetched All Recipes", data: recipes });
+    // Comment count
+    const commentCounts = await Comment.aggregate([
+      {
+        $group: {
+          _id: "$recipe",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Convert comment counts into a Map
+    const countsMap = new Map(
+      commentCounts.map((item) => [item._id.toString(), item.count]),
+    );
+
+    // Attach comment count to each recipe
+    const recipesWithCounts = recipes.map((recipe) => ({
+      ...recipe.toObject(),
+      commentsCount: countsMap.get(recipe._id.toString()) || 0,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      message: "Fetched All Recipes",
+      data: recipesWithCounts,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

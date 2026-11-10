@@ -51,7 +51,7 @@ const CommentSection = ({ recipeId }) => {
   return (
     <div className="bg-base-100 border border-base-300 rounded-(--radius-box) p-6 sm:p-8 shadow-sm space-y-8">
       <h2 className="font-display text-2xl font-bold text-base-content">
-        Reviews &amp; comments (12)
+        Reviews &amp; comments ({comments.length})
       </h2>
 
       {/* Add Comment Input */}

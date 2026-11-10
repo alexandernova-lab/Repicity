@@ -33,13 +33,7 @@ const CreateRecipe = () => {
       description: "",
       category: "",
       image: null,
-      ingredients: [
-        {
-          name: "",
-          amount: "",
-          unit: "g",
-        },
-      ],
+      ingredients: [],
       instructions: [""],
     },
   });
@@ -150,6 +144,9 @@ const CreateRecipe = () => {
                     placeholder="e.g. Creamy Garlic Butter Chicken"
                     className="w-full px-4 py-2.5 bg-base-200 border border-base-300 rounded-(--radius-field) text-sm focus:outline-none focus:border-primary text-base-content"
                   />
+                  {errors.title && (
+                    <p className="text-error text-sm">{errors.title.message}</p>
+                  )}
                 </div>
 
                 {/* Category Dropdown */}
@@ -186,6 +183,11 @@ const CreateRecipe = () => {
                     placeholder="Describe your recipe, its flavors, and what makes it special..."
                     className="w-full px-4 py-2.5 bg-base-200 border border-base-300 rounded-(--radius-field) text-sm focus:outline-none focus:border-primary text-base-content resize-none"
                   ></textarea>
+                  {errors.description && (
+                    <p className="text-error text-sm">
+                      {errors.description.message}
+                    </p>
+                  )}
                   <div className="flex justify-between items-center mt-1 text-[11px] text-base-content/50">
                     <span>A few sentences is plenty.</span>
                   </div>
@@ -310,7 +312,7 @@ const CreateRecipe = () => {
               appendIngredient({
                 name: "",
                 amount: "",
-                unit: "",
+                unit: "g",
               })
             }
             className="mt-4 px-4 py-2 bg-base-200 hover:bg-base-300 border border-base-300 text-base-content font-semibold text-xs rounded-(--radius-field) inline-flex items-center space-x-1.5 transition-colors cursor-pointer"
@@ -383,12 +385,12 @@ const CreateRecipe = () => {
             Your recipe appears in the feed as soon as you publish.
           </p>
           <div className="flex items-center space-x-3 ml-auto">
-            <button
-              type="button"
+            <Link
+              to={"/"}
               className="px-5 py-2 text-sm font-semibold text-base-content hover:bg-base-200 rounded-(--radius-field) transition-colors cursor-pointer"
             >
               Cancel
-            </button>
+            </Link>
             <button
               disabled={isSubmitting}
               type="submit"

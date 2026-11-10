@@ -10,6 +10,7 @@ const userSchema = new Schema({
     type: String,
     trim: true,
     unique: true,
+    required: true,
   },
   avatar: {
     type: String,

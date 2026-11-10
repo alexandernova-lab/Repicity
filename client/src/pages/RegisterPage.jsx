@@ -25,7 +25,9 @@ const Register = () => {
         toast.success("Register Success");
       }
     } catch (error) {
-      toast.error("Failed to register", error.message);
+      toast.error(
+        error.response?.data?.message || error.message || "Failed to register",
+      );
     }
   };
   return (
@@ -98,6 +100,20 @@ const Register = () => {
               {errors.email && <p>{errors.email.message}</p>}
             </div>
 
+            {/* username input */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-semibold text-base-content">
+                Username
+              </label>
+              <input
+                {...register("username")}
+                type="text"
+                placeholder="mayacooper"
+                className="w-full px-4 py-3 bg-base-100 border border-base-300 rounded-(--radius-field) text-base-content placeholder:text-base-content/40 focus:outline-none focus:border-secondary"
+              />
+              {errors.username && <p>{errors.username.message}</p>}
+            </div>
+
             {/* Password Input */}
             <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-base-content">
@@ -116,7 +132,8 @@ const Register = () => {
             <button
               disabled={isSubmitting}
               type="submit"
-              className="w-full bg-primary hover:opacity-95 text-primary-content font-semibold py-3 rounded-(--radius-field) transition-opacity cursor-pointer mt-2">
+              className="w-full bg-primary hover:opacity-95 text-primary-content font-semibold py-3 rounded-(--radius-field) transition-opacity cursor-pointer mt-2"
+            >
               Create account
             </button>
           </form>
@@ -126,7 +143,8 @@ const Register = () => {
             Already have an account?{" "}
             <Link
               to={"/login"}
-              className="font-semibold text-primary underline cursor-pointer">
+              className="font-semibold text-primary underline cursor-pointer"
+            >
               Log in
             </Link>
           </p>
