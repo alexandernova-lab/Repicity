@@ -48,7 +48,7 @@ export const getComments = async (req, res) => {
       });
     }
     const comments = await Comment.find({ recipe: id })
-      .populate("user", "name username")
+      .populate("user", "name username avatar")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
