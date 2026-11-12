@@ -141,9 +141,9 @@ const MyProfilePage = () => {
         {/* Profile Card Container */}
         <div className="bg-base-100 border border-base-300 rounded-(--radius-box) overflow-hidden shadow-sm">
           {/* Top Banner with Decorative Circles */}
-          <div className="h-36 w-full bg-gradient-to-r from-orange-100 via-amber-100 to-orange-200 relative overflow-hidden flex items-center justify-end px-8">
-            <div className="absolute right-[-20px] top-[-50px] w-64 h-64 rounded-full border border-orange-200/60 pointer-events-none"></div>
-            <div className="absolute right-[-60px] top-[-90px] w-96 h-96 rounded-full border border-orange-200/40 pointer-events-none"></div>
+          <div className="h-36 w-full bg-linear-to-r from-orange-100 via-amber-100 to-orange-200 relative overflow-hidden flex items-center justify-end px-8">
+            <div className="absolute right-5 top-12.5 w-64 h-64 rounded-full border border-orange-200/60 pointer-events-none"></div>
+            <div className="absolute right-15 top-22.5 w-96 h-96 rounded-full border border-orange-200/40 pointer-events-none"></div>
           </div>
 
           {/* Profile Content Area */}

@@ -18,12 +18,9 @@ import { toast } from "react-hot-toast";
 
 const EditRecipe = () => {
   const { id } = useParams();
+
   const [recipeDetail, setRecipeDetail] = useState(null);
 
-  // Selected Image
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  // Preview Image
   const [imagePreview, setImagePreview] = useState(null);
 
   // Navigation
@@ -34,8 +31,8 @@ const EditRecipe = () => {
     register,
     control,
     reset,
+    watch,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(updateRecipeSchema),
@@ -47,6 +44,21 @@ const EditRecipe = () => {
       instructions: [""],
     },
   });
+
+  const selectedImage = watch("image")?.[0];
+
+  // Image UseEffect
+  useEffect(() => {
+    if (!selectedImage) {
+      setImagePreview(null);
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(selectedImage);
+    setImagePreview(imageUrl);
+
+    return () => URL.revokeObjectURL(imageUrl);
+  }, [selectedImage]);
 
   // Ingredients Form State
   const {
@@ -247,18 +259,10 @@ const EditRecipe = () => {
                       <span>Replace photo</span>
 
                       <input
+                        {...register("image")}
                         type="file"
                         accept="image/png,image/jpeg,image/webp"
                         className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-
-                          if (file) {
-                            setSelectedImage(file);
-                            setImagePreview(URL.createObjectURL(file));
-                            setValue("image", file, { shouldValidate: true });
-                          }
-                        }}
                       />
                     </label>
                     <button

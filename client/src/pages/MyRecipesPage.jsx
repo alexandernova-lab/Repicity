@@ -9,7 +9,6 @@ import {
 import { categoryGradients } from "../constants/categoryStyles.js";
 import { useEffect, useState } from "react";
 import { api } from "../libs/axios.js";
-import { el } from "zod/v4/locales";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
 import EmptyRecipeCard from "../components/EmptyRecipeCard.jsx";
