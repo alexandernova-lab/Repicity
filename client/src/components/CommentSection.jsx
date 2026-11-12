@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { api } from "../libs/axios.js";
 import { Pencil, Trash2, Send } from "lucide-react";
 import toast from "react-hot-toast";
+import AuthContext from "../context/AuthContext.jsx";
 
 const CommentSection = ({ recipeId }) => {
+  // Use Context to get user info
+  const { user } = useContext(AuthContext);
+
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [commentText, setCommentText] = useState("");
+
+  // Edit Comment
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editText, setEditText] = useState("");
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -46,6 +54,48 @@ const CommentSection = ({ recipeId }) => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to post comment");
+    }
+  };
+
+  // Handle Update Comment
+  const handleUpdateComment = async (id) => {
+    if (!editText.trim()) {
+      return toast.error("Comment cannot be empty");
+    }
+
+    try {
+      const res = await api.patch(`/comments/${id}`, {
+        content: editText,
+      });
+
+      if (res.status === 200) {
+        toast.success("Comment updated successfully");
+
+        setEditingCommentId(null);
+        setEditText("");
+
+        const commentsRes = await api.get(`/comments/${recipeId}`);
+        setComments(commentsRes.data.data);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update comment");
+    }
+  };
+
+  // Handle Delete Comment
+  const handleDeleteComment = async (id) => {
+    try {
+      const res = await api.delete(`/comments/${id}`);
+
+      if (res.status === 200) {
+        toast.success("Comment deleted successfully");
+
+        setComments((prevComments) =>
+          prevComments.filter((comment) => comment._id !== id),
+        );
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete comment");
     }
   };
   return (
@@ -124,9 +174,65 @@ const CommentSection = ({ recipeId }) => {
                   </span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-base-content/80 leading-relaxed">
-                  {comment.content}
-                </p>
+                {editingCommentId === comment._id ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      rows="3"
+                      className="w-full px-3 py-2 bg-base-100 border border-base-300 rounded-(--radius-field) text-sm focus:outline-none focus:border-primary text-base-content resize-none"
+                    />
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateComment(comment._id)}
+                        className="text-xs font-semibold text-primary hover:opacity-80 cursor-pointer"
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingCommentId(null);
+                          setEditText("");
+                        }}
+                        className="text-xs text-base-content/50 hover:text-base-content cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs sm:text-sm text-base-content/80 leading-relaxed">
+                    {comment.content}
+                  </p>
+                )}
+                {user?._id === comment.user?._id && (
+                  <div className="flex items-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingCommentId(comment._id);
+                        setEditText(comment.content);
+                      }}
+                      className="flex items-center gap-1 text-xs text-base-content/50 hover:text-primary transition-colors cursor-pointer"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteComment(comment._id)}
+                      className="flex items-center gap-1 text-xs text-base-content/50 hover:text-error transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))

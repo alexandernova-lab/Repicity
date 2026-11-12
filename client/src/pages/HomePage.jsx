@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import { api } from "../libs/axios.js";
 import { Link } from "react-router";
 import RecipeCardSkeleton from "../components/skeletons/RecipeCardSkeleton.jsx";
+import EmptyRecipeCard from "../components/EmptyRecipeCard.jsx";
 
 const RecipeFeed = () => {
   const [recipes, setRecipes] = useState([]);
+
+  // For Category Filter
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   // Loading State
   const [loading, setLoading] = useState(true);
@@ -16,7 +20,11 @@ const RecipeFeed = () => {
     const fetchRecipes = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/recipes/");
+        const res = await api.get("/recipes/", {
+          params: {
+            category: selectedCategory === "All" ? "" : selectedCategory,
+          },
+        });
         setRecipes(res.data.data);
       } catch (error) {
         toast.error(error.response?.data?.message || "Failed to fetch recipes");
@@ -25,7 +33,7 @@ const RecipeFeed = () => {
       }
     };
     fetchRecipes();
-  }, []);
+  }, [selectedCategory]);
 
   const categories = ["All", "Breakfast", "Lunch", "Dinner", "Dessert"];
 
@@ -56,9 +64,10 @@ const RecipeFeed = () => {
       <div className="flex items-center space-x-3 overflow-x-auto pb-4 mb-8 no-scrollbar">
         {categories.map((category, index) => (
           <button
+            onClick={() => setSelectedCategory(category)}
             key={index}
             className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors cursor-pointer ${
-              index === 0
+              selectedCategory === category
                 ? "bg-base-content text-base-100"
                 : "bg-base-200 text-base-content hover:bg-base-300"
             }`}
@@ -70,13 +79,19 @@ const RecipeFeed = () => {
 
       {/* Recipe Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer">
-        {loading
-          ? Array.from({ length: 3 }).map((_, index) => (
-              <RecipeCardSkeleton key={index} />
-            ))
-          : recipes.map((recipe) => (
-              <RecipeCard key={recipe._id} recipe={recipe} />
-            ))}
+        {loading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <RecipeCardSkeleton key={index} />
+          ))
+        ) : recipes.length > 0 ? (
+          recipes.map((recipe) => (
+            <RecipeCard key={recipe._id} recipe={recipe} />
+          ))
+        ) : (
+          <div className="col-span-full">
+            <EmptyRecipeCard category={selectedCategory} />
+          </div>
+        )}
       </div>
     </div>
   );

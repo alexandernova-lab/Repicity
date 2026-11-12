@@ -45,7 +45,11 @@ export const createRecipe = async (req, res) => {
 
 export const getRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find()
+    const { category } = req.query;
+
+    const filter = category ? { category } : {};
+
+    const recipes = await Recipe.find(filter)
       .sort({
         createdAt: -1,
       })
